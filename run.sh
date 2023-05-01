@@ -1,8 +1,23 @@
 #!/bin/bash
 
 ## Request dependences
+which dhcpd &>/dev/null || {
+    which apt &>/dev/null && echo "Install the isc-dhcp-server package with:
+sudo apt-get update
+sudo apt-get install isc-dhcp-server"
+
+    which pacman &>/dev/null && echo "Install the dhcp package with:
+sudo pacman -Sy dhcp"
+    exit 1
+}
+
 which fzf &>/dev/null || {
-    echo "Install fzf package"
+    which apt &>/dev/null && echo "Install the fzf package with:
+sudo apt-get update
+sudo apt-get install fzf"
+
+    which pacman &>/dev/null && echo "Install the fzf package with:
+sudo pacman -Sy fzf"
     exit 1
 }
 
@@ -38,12 +53,14 @@ iptables -A FORWARD -i $eth_interface -o $wi_interface -j ACCEPT
 iptables -t nat -A POSTROUTING -o $wi_interface -j MASQUERADE
 
 ## Run the dhcp server
-cat <<< "
+cat >/tmp/tmp_dhcpd.conf <<< "
 ## Write temporal DHCPD configuration
 default-lease-time 600;
 max-lease-time 7200;
+ddns-update-style none;
+option dhcp-interface-name ${eth_interface};
 
-shared-network ETHERNET-subnet {
+shared-network ${eth_interface}-subnet {
     subnet 10.5.5.0 netmask 255.255.255.0 {
         range 10.5.5.100 10.5.5.200;
         option routers 10.5.5.1;
@@ -52,9 +69,9 @@ shared-network ETHERNET-subnet {
         # Google DNS:
         option domain-name-servers 8.8.8.8, 8.8.4.4;
     }
-    interface ETHERNET;
+    interface ${eth_interface};
 }
-" | sed "s/ETHERNET/$eth_interface/" | tee >/tmp/tmp_dhcpd.conf
+"
 dhcpd --no-pid -4 -f -cf /tmp/tmp_dhcpd.conf
 
 exit $?
