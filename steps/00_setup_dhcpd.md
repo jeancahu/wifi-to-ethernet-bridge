@@ -17,11 +17,14 @@ sudo pacman -S dhcp
 2. Configure the `/etc/dhcp/dhcpd.conf` file (Ubuntu/Debian) or `/etc/dhcpd.conf` file for ArchLinux, to define the DHCP server's configuration. For example:
 
 ```bash
-subnet 192.168.1.0 netmask 255.255.255.0 {
-  range 192.168.1.100 192.168.1.200;
-  option routers 192.168.1.1;
-  option subnet-mask 255.255.255.0;
-  option domain-name-servers 8.8.8.8, 8.8.4.4;
+shared-network eth0-subnet {
+    subnet 192.168.1.0 netmask 255.255.255.0 {
+        range 192.168.1.100 192.168.1.200;
+        option routers 192.168.1.1;
+        option subnet-mask 255.255.255.0;
+        option domain-name-servers 8.8.8.8, 8.8.4.4;
+    }
+    interface eth0;
 }
 ```
 
