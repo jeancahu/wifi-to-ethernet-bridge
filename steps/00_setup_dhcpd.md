@@ -39,14 +39,7 @@ INTERFACESv4="eth0"
 
 For ArchLinux add `interface eth0;` at the end of `/etc/dhcpd.conf` to declare the interface
 
-4. Restart the DHCP server service:
-
+If you are on Ubuntu and you don't want to serve through the eth0 interface always you start your computer don't forget to disable the service.
 ```bash
-## Ubuntu
-sudo systemctl restart isc-dhcp-server
-
-## ArchLinux
-sudo systemctl start dhcpd.service
+sudo systemctl disable isc-dhcp-server
 ```
-
-With these steps, you should have a DHCP server running on the eth0 interface of your Linux server. Make sure that the devices on the network are configured to obtain an IP address automatically through the DHCP protocol so that they can obtain an IP address from the server.
