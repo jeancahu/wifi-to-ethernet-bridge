@@ -72,6 +72,8 @@ shared-network ${eth_interface}-subnet {
     interface ${eth_interface};
 }
 "
-dhcpd --no-pid -4 -f -cf /tmp/tmp_dhcpd.conf
+
+chown dhcpd:dhcpd /tmp/tmp_dhcpd.conf
+dhcpd -user dhcpd -group dhcpd --no-pid -4 -f -cf /tmp/tmp_dhcpd.conf $eth_interface
 
 exit $?
